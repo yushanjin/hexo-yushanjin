@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="kubernetes,云原生," />
+  
+
+  
+    <meta name="description" content="kind快速部署Kubernetes环境" />
+  
+  
+  <link rel="icon" type="image/x-icon" href="/images/logo.jpg">
+  <title>kind快速部署Kubernetes环境 [ Yushanjin&#39;s Blog ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="Yushanjin's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="https://yushanjin.github.io/images/logo.jpg">
+    <span class="title">Yushanjin&#39;s Blog</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/categories" class="pure-menu-link">分类</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/atom.xml" class="pure-menu-link">订阅</a></li>
+          
+      
+  </ul>
+   
+</nav>
+
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        kind快速部署Kubernetes环境
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2020-11-26T08:56:12.000Z">
+        2020-11-26
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kubernetes/" rel="tag">kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" rel="tag">云原生</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 18 分钟</span>
+    </header>
+
+    <div class="post-content">
+      <h1 id="什么是kind"><a href="#什么是kind" class="headerlink" title="什么是kind"></a>什么是kind</h1><p>kind：Kubernetes In Docker，顾名思义，就是将kubernetes所需要的所有组件，全部部署在一个docker容器中，是一套开箱即用的kubernetes环境搭建方案。使用kind搭建的集群无法在生产中使用，但是如果你只是想在本地测试或者开发使用，不想占用太多的资源，那么使用kind是不错的选择。同样，kind还可以很方便的帮你本地的kubernetes源代码打成对应的镜像，方便测试。</p>
+<p>GitHub: <a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kind">https://github.com/kubernetes-sigs/kind</a></p>
+<p>Documentation: <a target="_blank" rel="noopener" href="https://kind.sigs.k8s.io/">https://kind.sigs.k8s.io/</a></p>
+<h1 id="安装kind"><a href="#安装kind" class="headerlink" title="安装kind"></a>安装kind</h1><p>以Linux下安装为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -Lo .&#x2F;kind https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;dl&#x2F;v0.9.0&#x2F;kind-linux-amd64</span><br><span class="line">chmod +x .&#x2F;kind</span><br><span class="line">mv .&#x2F;kind &#x2F;usr&#x2F;local&#x2F;bin&#x2F;kind</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建、查询集群"><a href="#创建、查询集群" class="headerlink" title="创建、查询集群"></a>创建、查询集群</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kind create cluster</span><br></pre></td></tr></table></figure>
+<p>该命令将默认创建名为kind的集群</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# kind create cluster</span><br><span class="line">Creating cluster &quot;kind&quot; ...</span><br><span class="line"> ✓ Ensuring node image (kindest&#x2F;node:v1.19.1) 🖼</span><br><span class="line"> ✓ Preparing nodes 📦</span><br><span class="line"> ✓ Writing configuration 📜</span><br><span class="line"> ✓ Starting control-plane 🕹️</span><br><span class="line"> ✓ Installing CNI 🔌</span><br><span class="line"> ✓ Installing StorageClass 💾</span><br><span class="line">Set kubectl context to &quot;kind-kind&quot;</span><br><span class="line">You can now use your cluster with:</span><br><span class="line"></span><br><span class="line">kubectl cluster-info --context kind-kind</span><br><span class="line"></span><br><span class="line">Have a question, bug, or feature request? Let us know! https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;#community 🙂</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kind get clusters</span><br><span class="line">kind</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kind create cluster --name test</span><br></pre></td></tr></table></figure>
+<p>该命令将创建名为test的集群</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# kind create cluster --name test</span><br><span class="line">Creating cluster &quot;test&quot; ...</span><br><span class="line"> ✓ Ensuring node image (kindest&#x2F;node:v1.19.1) 🖼</span><br><span class="line"> ✓ Preparing nodes 📦</span><br><span class="line"> ✓ Writing configuration 📜</span><br><span class="line"> ✓ Starting control-plane 🕹️</span><br><span class="line"> ✓ Installing CNI 🔌</span><br><span class="line"> ✓ Installing StorageClass 💾</span><br><span class="line">Set kubectl context to &quot;kind-test&quot;</span><br><span class="line">You can now use your cluster with:</span><br><span class="line"></span><br><span class="line">kubectl cluster-info --context kind-test</span><br><span class="line"></span><br><span class="line">Thanks for using kind! 😊</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kind get clusters</span><br><span class="line">kind</span><br><span class="line">test</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl cluster-info --context kind-test</span><br><span class="line">Kubernetes master is running at https:&#x2F;&#x2F;127.0.0.1:44543</span><br><span class="line">KubeDNS is running at https:&#x2F;&#x2F;127.0.0.1:44543&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;kube-dns:dns&#x2F;proxy</span><br><span class="line"></span><br><span class="line">To further debug and diagnose cluster problems, use &#39;kubectl cluster-info dump&#39;.</span><br></pre></td></tr></table></figure>
+
+<p>kubectl安装：<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">https://kubernetes.io/docs/tasks/tools/install-kubectl/</a></p>
+<p>查询集群节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# kubectl get nodes --context kind-test</span><br><span class="line">NAME                 STATUS   ROLES    AGE     VERSION</span><br><span class="line">test-control-plane   Ready    master   4m55s   v1.19.1</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl get nodes --context kind-kind</span><br><span class="line">NAME                 STATUS   ROLES    AGE     VERSION</span><br><span class="line">kind-control-plane   Ready    master   9m14s   v1.19.1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# docker ps</span><br><span class="line">CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                       NAMES</span><br><span class="line">7fa7f8313453        kindest&#x2F;node:v1.19.1   &quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;entr…&quot;   16 minutes ago      Up 16 minutes       127.0.0.1:44543-&gt;6443&#x2F;tcp   test-control-plane</span><br><span class="line">6fee527273e2        kindest&#x2F;node:v1.19.1   &quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;entr…&quot;   20 minutes ago      Up 20 minutes       127.0.0.1:36585-&gt;6443&#x2F;tcp   kind-control-plane</span><br><span class="line">root@ubuntu:~# docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                       NAMES</span><br><span class="line">7fa7f8313453        kindest&#x2F;node:v1.19.1   &quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;entr…&quot;   16 minutes ago      Up 16 minutes       127.0.0.1:44543-&gt;6443&#x2F;tcp   test-control-plane</span><br><span class="line">6fee527273e2        kindest&#x2F;node:v1.19.1   &quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;entr…&quot;   20 minutes ago      Up 20 minutes       127.0.0.1:36585-&gt;6443&#x2F;tcp   kind-control-plane</span><br></pre></td></tr></table></figure>
+<p>test-control-plane、kind-control-plane是运行在容器内的kubernetes节点，也正是kubernetes in Docker的意思</p>
+<p>查询集群内运行的pod</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# kubectl get pods --all-namespaces --context kind-kind</span><br><span class="line">NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system          coredns-f9fd979d6-cqpss                      1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          coredns-f9fd979d6-kvbzm                      1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          etcd-kind-control-plane                      1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          kindnet-br2qc                                1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          kube-apiserver-kind-control-plane            1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          kube-controller-manager-kind-control-plane   1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          kube-proxy-4chlm                             1&#x2F;1     Running   0          22m</span><br><span class="line">kube-system          kube-scheduler-kind-control-plane            1&#x2F;1     Running   0          22m</span><br><span class="line">local-path-storage   local-path-provisioner-78776bfc44-xl4ht      1&#x2F;1     Running   0          22m</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl get pods --all-namespaces --context kind-test</span><br><span class="line">NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system          coredns-f9fd979d6-f7wsz                      1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          coredns-f9fd979d6-j9xtx                      1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          etcd-test-control-plane                      1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          kindnet-jq867                                1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          kube-apiserver-test-control-plane            1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          kube-controller-manager-test-control-plane   1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          kube-proxy-swn5j                             1&#x2F;1     Running   0          18m</span><br><span class="line">kube-system          kube-scheduler-test-control-plane            1&#x2F;1     Running   0          18m</span><br><span class="line">local-path-storage   local-path-provisioner-78776bfc44-nwqjq      1&#x2F;1     Running   0          18m</span><br></pre></td></tr></table></figure>
+
+<p>查询pod使用的镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# docker exec -it kind-control-plane crictl images</span><br><span class="line">IMAGE                                      TAG                  IMAGE ID            SIZE</span><br><span class="line">docker.io&#x2F;kindest&#x2F;kindnetd                 v20200725-4d6bea59   b77790820d015       119MB</span><br><span class="line">docker.io&#x2F;rancher&#x2F;local-path-provisioner   v0.0.14              e422121c9c5f9       42MB</span><br><span class="line">k8s.gcr.io&#x2F;build-image&#x2F;debian-base         v2.1.0               c7c6c86897b63       53.9MB</span><br><span class="line">k8s.gcr.io&#x2F;coredns                         1.7.0                bfe3a36ebd252       45.4MB</span><br><span class="line">k8s.gcr.io&#x2F;etcd                            3.4.13-0             0369cf4303ffd       255MB</span><br><span class="line">k8s.gcr.io&#x2F;kube-apiserver                  v1.19.1              8cba89a89aaa8       95MB</span><br><span class="line">k8s.gcr.io&#x2F;kube-controller-manager         v1.19.1              7dafbafe72c90       84.1MB</span><br><span class="line">k8s.gcr.io&#x2F;kube-proxy                      v1.19.1              47e289e332426       136MB</span><br><span class="line">k8s.gcr.io&#x2F;kube-scheduler                  v1.19.1              4d648fc900179       65.1MB</span><br><span class="line">k8s.gcr.io&#x2F;pause                           3.3                  0184c1613d929       686kB</span><br><span class="line">root@ubuntu:~# docker exec -it kind-control-plane crictl ps</span><br><span class="line">CONTAINER           IMAGE               CREATED             STATE               NAME                      ATTEMPT             POD ID</span><br><span class="line">1c881f7f0d306       bfe3a36ebd252       25 minutes ago      Running             coredns                   0                   75e161b37ab2d</span><br><span class="line">c64dd6bb666f3       bfe3a36ebd252       25 minutes ago      Running             coredns                   0                   a8305dc572af5</span><br><span class="line">fea2b69f5472d       e422121c9c5f9       26 minutes ago      Running             local-path-provisioner    0                   fb704b6340b63</span><br><span class="line">52f0995ba00f8       47e289e332426       26 minutes ago      Running             kube-proxy                0                   4c787e616d5a7</span><br><span class="line">b87cdcc514f59       b77790820d015       26 minutes ago      Running             kindnet-cni               0                   14eb70f9ca549</span><br><span class="line">ce2c4e5b2b57f       0369cf4303ffd       27 minutes ago      Running             etcd                      0                   744a99a558714</span><br><span class="line">93b5084a29992       8cba89a89aaa8       27 minutes ago      Running             kube-apiserver            0                   91f88afc5a39b</span><br><span class="line">8b9579313058f       7dafbafe72c90       27 minutes ago      Running             kube-controller-manager   0                   8d54fdffef86e</span><br><span class="line">10fbb8244ad3b       4d648fc900179       27 minutes ago      Running             kube-scheduler            0                   a985ae4a105bc</span><br></pre></td></tr></table></figure>
+<p>其中，crictl命令可以理解为docker命令</p>
+<h1 id="删除集群"><a href="#删除集群" class="headerlink" title="删除集群"></a>删除集群</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kind delete cluster --name test</span><br></pre></td></tr></table></figure>
+<p>删除名为test的集群，–name未指定的话，将默认删除kind集群</p>
+<h1 id="创建高可用kubernetes集群"><a href="#创建高可用kubernetes集群" class="headerlink" title="创建高可用kubernetes集群"></a>创建高可用kubernetes集群</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# cat kind-config.yaml</span><br><span class="line">kind: Cluster</span><br><span class="line">apiVersion: kind.x-k8s.io&#x2F;v1alpha4</span><br><span class="line">nodes:</span><br><span class="line">- role: control-plane</span><br><span class="line">- role: control-plane</span><br><span class="line">- role: control-plane</span><br><span class="line">- role: worker</span><br><span class="line">- role: worker</span><br><span class="line">- role: worker</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kind create cluster --config kind-config.yaml --name test2</span><br><span class="line">Creating cluster &quot;test2&quot; ...</span><br><span class="line"> ✓ Ensuring node image (kindest&#x2F;node:v1.19.1) 🖼</span><br><span class="line"> ✓ Preparing nodes 📦 📦 📦 📦 📦 📦</span><br><span class="line"> ✓ Configuring the external load balancer ⚖️</span><br><span class="line"> ✓ Writing configuration 📜</span><br><span class="line"> ✓ Starting control-plane 🕹️</span><br><span class="line"> ✓ Installing CNI 🔌</span><br><span class="line"> ✓ Installing StorageClass 💾</span><br><span class="line"> ✓ Joining more control-plane nodes 🎮</span><br><span class="line"> ✓ Joining worker nodes 🚜</span><br><span class="line">Set kubectl context to &quot;kind-test2&quot;</span><br><span class="line">You can now use your cluster with:</span><br><span class="line"></span><br><span class="line">kubectl cluster-info --context kind-test2</span><br><span class="line"></span><br><span class="line">Have a nice day! 👋</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl get nodes --context kind-test2</span><br><span class="line">NAME                   STATUS   ROLES    AGE     VERSION</span><br><span class="line">test2-control-plane    Ready    master   5m12s   v1.19.1</span><br><span class="line">test2-control-plane2   Ready    master   4m38s   v1.19.1</span><br><span class="line">test2-control-plane3   Ready    master   3m22s   v1.19.1</span><br><span class="line">test2-worker           Ready    &lt;none&gt;   2m5s    v1.19.1</span><br><span class="line">test2-worker2          Ready    &lt;none&gt;   2m5s    v1.19.1</span><br><span class="line">test2-worker3          Ready    &lt;none&gt;   2m5s    v1.19.1</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl get pods --all-namespaces --context kind-test2</span><br><span class="line">NAMESPACE            NAME                                           READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system          coredns-f9fd979d6-jbpcz                        1&#x2F;1     Running   0          5m16s</span><br><span class="line">kube-system          coredns-f9fd979d6-ng4qp                        1&#x2F;1     Running   0          5m16s</span><br><span class="line">kube-system          etcd-test2-control-plane                       1&#x2F;1     Running   0          5m15s</span><br><span class="line">kube-system          etcd-test2-control-plane2                      1&#x2F;1     Running   0          4m54s</span><br><span class="line">kube-system          etcd-test2-control-plane3                      1&#x2F;1     Running   0          2m59s</span><br><span class="line">kube-system          kindnet-gxpjn                                  1&#x2F;1     Running   0          4m55s</span><br><span class="line">kube-system          kindnet-jqnx5                                  1&#x2F;1     Running   0          2m20s</span><br><span class="line">kube-system          kindnet-lczmx                                  1&#x2F;1     Running   0          2m18s</span><br><span class="line">kube-system          kindnet-q8bcn                                  1&#x2F;1     Running   0          2m19s</span><br><span class="line">kube-system          kindnet-q9ng2                                  1&#x2F;1     Running   0          3m37s</span><br><span class="line">kube-system          kindnet-s7kfb                                  1&#x2F;1     Running   0          5m14s</span><br><span class="line">kube-system          kube-apiserver-test2-control-plane             1&#x2F;1     Running   0          5m15s</span><br><span class="line">kube-system          kube-apiserver-test2-control-plane2            1&#x2F;1     Running   0          4m54s</span><br><span class="line">kube-system          kube-apiserver-test2-control-plane3            1&#x2F;1     Running   1          3m9s</span><br><span class="line">kube-system          kube-controller-manager-test2-control-plane    1&#x2F;1     Running   2          5m14s</span><br><span class="line">kube-system          kube-controller-manager-test2-control-plane2   1&#x2F;1     Running   0          4m54s</span><br><span class="line">kube-system          kube-controller-manager-test2-control-plane3   1&#x2F;1     Running   0          2m8s</span><br><span class="line">kube-system          kube-proxy-47nc7                               1&#x2F;1     Running   0          5m16s</span><br><span class="line">kube-system          kube-proxy-5799m                               1&#x2F;1     Running   0          4m55s</span><br><span class="line">kube-system          kube-proxy-cvm49                               1&#x2F;1     Running   0          2m18s</span><br><span class="line">kube-system          kube-proxy-s7rsp                               1&#x2F;1     Running   0          2m18s</span><br><span class="line">kube-system          kube-proxy-sxwgl                               1&#x2F;1     Running   0          3m37s</span><br><span class="line">kube-system          kube-proxy-wvskh                               1&#x2F;1     Running   0          2m20s</span><br><span class="line">kube-system          kube-scheduler-test2-control-plane             0&#x2F;1     Running   2          5m15s</span><br><span class="line">kube-system          kube-scheduler-test2-control-plane2            1&#x2F;1     Running   0          4m54s</span><br><span class="line">kube-system          kube-scheduler-test2-control-plane3            1&#x2F;1     Running   0          2m31s</span><br><span class="line">local-path-storage   local-path-provisioner-78776bfc44-fkdwq        1&#x2F;1     Running   1          5m12s</span><br></pre></td></tr></table></figure>
+
+<p>上述过程，我们创建了两个kubernetes集群，kind和test2；可以看到我们在使用kubectl访问集群时，增加了参数：–context，这在本地的配置文件里指定了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# cat .kube&#x2F;config</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJd01URXlOekF3TkRJeU9Wb1hEVE13TVRFeU5UQXdOREl5T1Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTERTCm5TU1NHS05PUUlCVWpQeXpYOFRDZm5IamExV2JxeXZJeHV3Y1Aybmh6Zi9EdG9wVDRnSTVjMlBMV3Qrd05BUFUKUHA2dGV3ZkhNQ3N6MnJLbnhaRmtWS2c5NXVFdW53V1ZuZnlmeGV0TjlOU1JTZ2s2dkJuVUt6SFliRXIybEY0LwpicFVxT2IzWnkxQXdYNlpyRTN3Y1I1RjdLV2trT0FZbHdobUtiLzIwOVZJRG4yMW9CMHMzNXgrM3Z2L2gzQ3VaCkJCQjJnNVBKMm4xc1pwd05scnZDMmh0RmJDSjQwQVNXZmNsUksyejBYUEIvdzdNQlBXMHp1cnpEMUVBcGdZVUcKUGUwOEx3dW1zMllZR3Y5TDJXMERhWW90c2JoVXlWZWRDNnpjeWtUZ0hOb1B6LytvZlBHQmxYTko3S2lwd2Z6ZQo2dzdHZGJhbjlpRms4cjAyaVQ4Q0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZEY2liT2RWZTN4U0w0RmMxOWVJdmZnSTBHcjZNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCS1lKSVFaenhSblFWWWp4TnlTaXJualFvZUM3OGtDMERNYjZpRFBvMFdEbmdTUjhRYgpqRjZxR2ZPMTFTcDNjeVl3V1IrM3UzU2pzQUJUUG5jcWZpWnEyN3VDMlRYNjdMQzRPNVFoVkdlRlBDdXJNNHluCi8weDZuOUZrMko5YmpTT0o1aDB2NmQ1eXBibk5sNVgvN1czWFVyK2tjOSswWG1sMFN0dmJVZ0hCaWVmWGxtZ3AKUXl5TlFtNU1yWlRFcWJOT0JubW1RWUJYWDdydWVLZXhVYUJ4QXQrRVJVWHBVOWNhbkNWWWhuZFBuMVNBYVladApsQkZyamRSNzg1SE1EV21qTW5UalJXSUhOSWd2NUgwKyt2MmN5cjRSK1lUWGo3S0JrdEZTRDA2U0I0RDZVeFk2CmRUZ25UMngzRXJvSERPZURjWWRrVmt2TkF5aC9JUGFTd2R6cwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg&#x3D;&#x3D;</span><br><span class="line">    server: https:&#x2F;&#x2F;127.0.0.1:36585</span><br><span class="line">  name: kind-kind</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJd01URXlOekF6TWpJeE9Gb1hEVE13TVRFeU5UQXpNakl4T0Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBSi85CjlZQ0VseTNRLzRuc2t5dGZZY2Zpby9jcDJoaSsxRWpPOGMrVmF4YTkrbTIrdldBT1VhU0xQZnQ0VmRSL1hIWjYKT3FQSEY5K3ozNEZIb1p4RTJIY3kxd3R0Y1hOTXk1Qy9VMUdnakgramZLaWNmbVJmS3luS1M4SU80T3pLRHBKUQpodHQzb0JxeDVHdU0wSUpkVmsydVg5RjhmVHEyTllaN2lzK0NOVWdXM2dxMXA4SzNkZWxjaDYyM2NBSHhSS0JLCmZEZC9iZnZiZitvR0ZQS29BNWhLcXVKb3BDVFcrN1VZdnA4ZCs0QTgwYkZ2cG5CSmlUK1pGU0sxRExKZHBuRlgKV0pDOHdwNzNBYU9KSHAydnNTZ0p6ajFvUHUvL1lnSWNPNStoSGl6bThVcnVGQWxkWmE2ZzN4VnFCazNDZnducApsaU50MzdiblJrZ3VUNUU5cFFNQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZNdnpFOXJORVFUWGNyUmJHcllmQ0J6VEpZby9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFBMjJZS1htS29kTkVmUklGS1ZOMXk1alRjQ2FIVnAyd3QvR1RNT3dHU1pYQXhlN2xBOQpIZDVCWHJoaXB6bkNPR1hxakRoZkVkaWVIa3VlcDNQWGxVTWxxa20yUGZkdUp0cTJ3T0piR0ZTVWZRR2xpS09MCkJ0eDRwVmd1dC9EQW11ZHNNNFlSeGRTS1R3bkppcjBBbkNnSWprd0gvZzdzekFYTVppMmZkYk9oL3NzcVFlZU4KREYrc01ld0czK2pSaVVqTEM2ck9sb0UySzArVjNhMDlMbmNiYlRCNDBVM0pZR0VvallzVExEdXZPakhuZElkKwpyM0FHMlNXMDRYek8wcHF4VDhlRjlkUE5qVG83SlpIeDc3RUtuNVNYU1YweGRuTTR1eHVBWDBoVExLenFyMlRNCmVJTzlZNGZWeHdCQk9BaFBQVmFTMW5SZy9GMXFIWWNKK20wUgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg&#x3D;&#x3D;</span><br><span class="line">    server: https:&#x2F;&#x2F;127.0.0.1:34927</span><br><span class="line">  name: kind-test2</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: kind-kind</span><br><span class="line">    user: kind-kind</span><br><span class="line">  name: kind-kind</span><br><span class="line">- context:</span><br><span class="line">    cluster: kind-test2</span><br><span class="line">    user: kind-test2</span><br><span class="line">  name: kind-test2</span><br><span class="line">current-context: kind-test2</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: kind-kind</span><br><span class="line">  user:</span><br><span class="line">    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURFekNDQWZ1Z0F3SUJBZ0lJTHRQZkozeVliVHN3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TURFeE1qY3dNRFF5TWpsYUZ3MHlNVEV4TWpjd01EUXlNekZhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXJEaURMOWhSUGduVzNwdlcKQ1pNekVlTG0vRTJuVmlXdG9icTVoZUdrdG1Udi9aWEUydG9uKy96ZWROOThvM3J4ZEdneDNTZDRndjZtSnpQbgpFZ3hTRDcrQnErSmt5WG5oQThPM1RQakN0aHdES1JIZjEzbkI4NDNlbjZ3S3E5K3A1RHB2UFNNSkgyQkJLckkrCjlHWTFvTWp2SnRWSjMyZ1dhTnlJV0hzTkE0QmdPM0RRT2Y2cGN6bXZhbllKZFliYTFpQmpKUEVaRURPNEpFdHIKZWYrTUFHb1diSFlaeDdySWo5eTJoNzdOQi9DV0k1alVSUXp6MWQ0ZlFnV05WR1cyblVXbGlGZjlEWlRVR25CMwpHMHBUTjc5N1U0bUNYdWVBUjFxY25idS9YNjBMb2l6bEpKVWJzcjZYUWFaRmtKS2FzSGx2Tmdydm11cWhnSjZTCmxCWWNIUUlEQVFBQm8wZ3dSakFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0h3WURWUjBqQkJnd0ZvQVVOeUpzNTFWN2ZGSXZnVnpYMTRpOStBalFhdm93RFFZSktvWklodmNOQVFFTApCUUFEZ2dFQkFBay8xbjJqLzhGdlhISm94V0Q3dUl4WUxTUmlrTjcxWWdOOW1yckVYRjVFUkxBMjI5eEtyT1c1ClV2Tm9nZGlqdWpEbDhoVjRoU1hkY3M0dE9ZNmZYbExkN3JhN25vL054UUtHM1lPdktWM2g0eS9wUEYxMENQL0sKTTFhSnNkY1U2aG8wbnZrL1dQSDB2ckxtNE1jUHpBbFUvazdvd3FiemcybHZQdDBCMTJjZHh4bk44UHp5VU4zZwpQQVBzT3hab1hwQnVpNjkxcEt2a1VDUm1MY0dUTHowT0Y5YXVOaUhRRG1qMG1hSEg2ckI2c0kvQzBuZ08vaCtSCmNsUnBGYk9uQnZRbW1nRjZER0E4cGxUSUM2ZE1JOGtXRzVaQWFSbzMrblFLME5sMERaUDVBTjM1cE1yS0M1R3cKeTdHaVlRQkFCVlJOZ2FJemg1bktHUXFJVVFXRUU5TT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo&#x3D;</span><br><span class="line">    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBckRpREw5aFJQZ25XM3B2V0NaTXpFZUxtL0UyblZpV3RvYnE1aGVHa3RtVHYvWlhFCjJ0b24rL3plZE45OG8zcnhkR2d4M1NkNGd2Nm1KelBuRWd4U0Q3K0JxK0preVhuaEE4TzNUUGpDdGh3REtSSGYKMTNuQjg0M2VuNndLcTkrcDVEcHZQU01KSDJCQktySSs5R1kxb01qdkp0VkozMmdXYU55SVdIc05BNEJnTzNEUQpPZjZwY3ptdmFuWUpkWWJhMWlCakpQRVpFRE80SkV0cmVmK01BR29XYkhZWng3cklqOXkyaDc3TkIvQ1dJNWpVClJRenoxZDRmUWdXTlZHVzJuVVdsaUZmOURaVFVHbkIzRzBwVE43OTdVNG1DWHVlQVIxcWNuYnUvWDYwTG9pemwKSkpVYnNyNlhRYVpGa0pLYXNIbHZOZ3J2bXVxaGdKNlNsQlljSFFJREFRQUJBb0lCQVFDYlJzUzVVYTlHWVRhegpOUXhSUzcvREE3TEJqdjR1QlFDOURnOFJyL1dEWWhTanJmSjBaRGVpMGtaOFY3Z1g2ZFJqNFVIOEpRZGFER0VnCmZZSjhXbEZ1MDNzRno3U1JsMnNTcXRiTTlva1FDc2Vxc3V3QWFrNDkydzc3SmZIbEwxOE5ZTVpFK0I3VWhFT2QKVEdMSWxwTUpxY0UrWVJZZThNa3J1SkxTTy9mcXk4eW1zWnk5ZHlyOWIvTjJnZm1iYW1kWVpVa3hneFVaVVB6RQpqdDBFZEZ5YThHK29YcUlMakZoR3oyQnBHSFJIVnNJYjlGdEhEbktzTVV5YzNGQXZyTmVjTHYyYmw1a0tjb1pBClY3ay9pMHhiVGpWK0tVSXQ2STlPb09aNkIzNjZkbDJjUHNQQmJtK3pRN3A4a0l0SXdoanpOUVN3QytjVFhVYnIKQ2Yxb3BpYjlBb0dCQU11RlNJVlpjaVk1akNSWlRnd0dEczlybGdsWW9hNFA4TkUyMng5RFdoMVNyS2k2and0VgorcGphM1V3ZTBYRHBWTFIrZXNKZ1NYZlBqSk5WVW5KS0RKeElBTGNHM01qek9RcUlwYjMxMXBoenJsdWo4WGllCi8wQ0ZMU0YyR2N0b1B2cUxPUWFvQjNFcy96UmxzUmVOSlMvUEp0NG9pS29ERmI3d05zbFRYVWRqQW9HQkFOaWgKRXhadG5qd1RRZzBpUHU0SERYUlU0M0hzQ2pWMFh0MENGclY0Q2Qzcjc3ZUsxd2RtSkhVUWczV0VKeUxBREhyVQpIa0EzKzRJdXdmcVE0d0FwZHF6SFF4UUtJbXA2dEpVTElYL2xhNk1RbFltSTREcHFVUWRETi8yN0V4bXAwRkZVCkc1b2FNb1BoOVNLMk0wZ2RkWjJpS3llZ2I5dkJLNWJORzVTdUhTWi9Bb0dCQUsyaVM4b0JFdU5MeTZXalQzUHcKb3lnUmlOTDJmQklONVk0SStBK0hIZFhRbUIvbjhteGdjVW1CeUxYTndUQk0wWWlnTThtcjdtSTZmNXVmZXBTcApXbkxtOXowdnJLUUE1bFIzV3JoamlpOU0ycCt5a2l3dnNtUHdleDJHTGVHZFVjWGRpOHlEQkw1by9sNU11RGI0Cm81WlRiTHl5NWszdURkcDJCTGZrMkxzekFvR0JBTEp6aGdqTXhqUFEzWEY2UzRMRFZvY0ZRdFBlME00V0RldGIKeEI4N1FrMkpCVkVhVTJacDh4Qm9TUkt1aVpxcnY5d1REdFJ5Q1lMRlI5QkVPR3N5dk9zNXZuMHNtQXRGQjZ0YgpudjMvbkxxWWQ4YnpkVnRKcDNRbklHR3BFT1BzS29wRWtmUlJMbG5MOHFia2xyd0tZSkE1UGZtSHhYMnUxRnlHCm0valBzWDI3QW44cStrMXBqRFlMakMzSjlXWkE2a3Blc05yMENaU0RaTjNhZy9LNUxzQTVaekhaclhMQm9EaEYKekJ5ankvVVpUM1RlOXVxM2dTb1pNdnp1TVRRYWVLclFmOFBHQi9sNUVvdDJxSkMza1piR1F5cXNQVG8yT0JSdApnNytzdjE2azRieEZlMkVRVmU4M0NXR0pneEZkKzc1c1NxZGxON1RKZXJVOUdxbnM1dmk1Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg&#x3D;&#x3D;</span><br><span class="line">- name: kind-test2</span><br><span class="line">  user:</span><br><span class="line">    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURFekNDQWZ1Z0F3SUJBZ0lJR2toZno1Qy9Yc2d3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TURFeE1qY3dNekl5TVRoYUZ3MHlNVEV4TWpjd016SXlNakJhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXJ6azZ2RFJsMjI4V1RndUEKYnNNN0tLVUVaaWRmbVBKVW1kaitmdCs1UTZFSHFvUitzOHVycDVVc0tOY0krZzdoYkNJa2VzdzE4OGZ0NDVlSwp4eGpmV1NiUXNiSjYyb3RQRUVoSGpPZElRTHVxQlBqR1J1N3NwUE8yRzFnMFZTMm9UY0VUVlYzQ2RCUFFPRjNOCm9WblhPdzQwSWttWXVURDZHUEdNT2VwN05Rak4vZERybVphMy94WWxJK2loVHZJbnZXNjVYYmd0NTNwS203YXgKOUNSVGhjNUtONjg2TzVLekR6ZnhPZGtpUUhJdzNXL3BpTXRvOVV5QUF3V2RoUmc0K0VacW5OTjZXREl4RlNPNQpJN0Z6c3dtT2s0L29wcW55ZHhmNnFYamF6MGlvTTNyM0I4bUY0c09VakhtaDJyUnB3a3ZpQUxkV3AvbVo0ek5uClJYYVp3UUlEQVFBQm8wZ3dSakFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0h3WURWUjBqQkJnd0ZvQVV5L01UMnMwUkJOZHl0RnNhdGg4SUhOTWxpajh3RFFZSktvWklodmNOQVFFTApCUUFEZ2dFQkFIMHg2am5uajNSQWxBY0dOZmxyY1Zob01XVUpOZCtVak5OSXNSTHRaSzJTYTh6SThCK0VIeUxFCndhRjJGMzZ0VTV6L1JiSFluK3d3Q3ByQVJjLzhYTUx2OEpnMVU2aDg2SkxpNm9qc29Vb0dhUFNoWmI3S1YyOUQKSE5JQ2p5M2QrenhjdEV4OWFTRDB3WkR0cFpVaS9tZlQ3MklRekVUazQ2QTQ4bldYdkx0MWJ6TEZ4T1hQZVB1WgpiZG1lcWR5QmN1TXI0MUppcEJVUlpOWDgxQ0xIQ1ZQU2tsRHkySVl0OUgxeVNmb3RHMUV4ZHlDZE1vRjZTVUdhCkpLY0psNGFSQ3JNLzNqSGx3YVpGcWR0WkFFZ2pzM3lOYXllTW9SYi93bEdpWkdaQTFhQ3JNZlU5bXRnTlMrMWIKbmE1M0RxVmRKZHBTSnhWSjNPQXpUY2s0OVV1Z2c4ND0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo&#x3D;</span><br><span class="line">    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBcnprNnZEUmwyMjhXVGd1QWJzTTdLS1VFWmlkZm1QSlVtZGorZnQrNVE2RUhxb1IrCnM4dXJwNVVzS05jSStnN2hiQ0lrZXN3MTg4ZnQ0NWVLeHhqZldTYlFzYko2Mm90UEVFaEhqT2RJUUx1cUJQakcKUnU3c3BQTzJHMWcwVlMyb1RjRVRWVjNDZEJQUU9GM05vVm5YT3c0MElrbVl1VEQ2R1BHTU9lcDdOUWpOL2REcgptWmEzL3hZbEkraWhUdkludlc2NVhiZ3Q1M3BLbTdheDlDUlRoYzVLTjY4Nk81S3pEemZ4T2RraVFISXczVy9wCmlNdG85VXlBQXdXZGhSZzQrRVpxbk5ONldESXhGU081STdGenN3bU9rNC9vcHFueWR4ZjZxWGphejBpb00zcjMKQjhtRjRzT1VqSG1oMnJScHdrdmlBTGRXcC9tWjR6Tm5SWGFad1FJREFRQUJBb0lCQUR5a0tNQ2p2YkNRcEg2RQpHb0c2elVtR3Vwd0QrbUM3VlM0ZFhBNWFyUXBMdTVSMjRFYW5NUlFCVzFRUy80ZFRDUTdjVGhXMWdPS0tpYmpmClpHYjlJNmI5K1BIV25BL3djSDlwRkdJZVZQSWFRSUFSL01UbHdUNWhIZUFleVpYRkJGOU1kNzF1Z25LYnZNOFYKSDZvOHBuRkl2Q0ExcWtaRlBmak45OEsvZEw1b1o0U3BrRjVxT2lTZ1MzdjVvTVM5UzR4OGRLTERtNldlYlJIZApCNTByaXppamJkVFJqRVZ4Yjk4ZG9GK0pYbWhwYS9jSXg1WmNrOFoxVElCMUJvRmpaSytsM014S0UyZkdNYnBrCjNUMUk3cGlFNVg0M1N3YmRQUksvNGxKT1NYUjdUeHNkN3kwajFuMjhtaHUwdEJPdUlnbHUrYTZ1UW5mZ1lVOTQKNTN1SjhEVUNnWUVBd2tPY1crQzJvcm9yQU5MUld6TWVlZnlmNG1pelpTQU9uelJ5WGRtWU9paWRiU1lRWlRXegpOWjJrSWlWLzBwS0hxM213dWp4K1gyQlRqVGE5MGNRUnVndkdzcUhRVmdQOVczZ1V0TWtLTTVobG9sUHZwTUZvCnU1Z2JNMjNCM1luYWdWR0w3ajVaUmVLWEYrbkRWbjdwdUt4TmFzZ2tmL1dZYy9CenlCeWFBRk1DZ1lFQTV1aVMKUVJqbzFlSVlsK0dRSUY5Rzh3dmdxL1puZS9yVSt3ZWVzcSt6OHZEck43TlRJUnZMcllVY0NZaHRWY0VWVkF5UgpyZzkvQU50UDVIcEFoQ2Z3OHJkcjNCNmxqY0JDMjhVQ0JMOWFsRXpDbjVCRFBEVVN3Z0Y3SE5UaUwvUE9OWEFkCmlJc1pydHJibzlUdzkyOS9HRUQ1aFV5N21DR3J1d0Y1d1gxWEN4c0NnWUE1eENFYXNSZWVDLzM5b0xMZ2k3TGsKVTFxMzJLcC94NmlSYnVjVFFVRWpDakRGNUN1NzdOdjlkWUw1SkcxK0VGU0hpUWdrV1JpN0E4blVsQktkN2MvWApvdWpTOVlzZUNOR3VBV2NtMnlGTmRtUENnWE1oYXVIWjVzRXY2ZE5jTFVIc2NuTkp4UUNHNTNwR2doeXorOGxFClFQaEVhSDl5RFhYb0EvaHA2UmRpUVFLQmdGaWk3QWxyQzIyV3hjUC9oUGk0T2g3djcwVnpaNVB5M0RDa1l5bksKUW5RK1FMeDM3TEFuNEU1eWF5bkpvZGFxTUlxNzdHdjViTklpWFkraDBnUW81TmYyeXNPTFRCZVd0dE52MDIrSgpHTGNXcEJybUlMa0swbkdBYWdiT1BTa1ZHSkh3d0pWNmQ5aGtFSzNaL3Ntc2xnZjBZUlBuT1plVFRUMlN1bThvCnN2SURBb0dBWk85dWNVS215OHBmM1A5L2NZQmVOVU9EOUFSQytna29DQkE5V1Zuclk3bDk4ZFRuWjFFbzZZcEkKUEkvRmFZRWcvYnptT3k1bzRDNVc0NGpZZnJLMFh0aHZkN3lIbVJidnNRRzBSV21EZnQ5OE5EbU9MbG44a0RMQQpUb1ROOU5IbWJVWmQ1VXZLa3BMTWhLbWQ5M05hdklXajlnV245TXh4MXBaUURleWg0SUk9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
+<p>可以看到两个cluster，两个context。context指定了cluster及user，users字段列出了两个user</p>
+<p>context名为kind-kind，cluser为kind-kind，user为kind-kind，意思就是当指定–context为kind-kind时，将使用kind-kind的user去访问cluster为kind-kind的集群。</p>
+<p>current-context: kind-test2说明当前的context使用的是kind-test2，如果不指定–context，将默认使用kind-test2</p>
+<p>当然，用户可以修改当然默认的current-context</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# kubectl get node</span><br><span class="line">NAME                   STATUS   ROLES    AGE     VERSION</span><br><span class="line">test2-control-plane    Ready    master   2d23h   v1.19.1</span><br><span class="line">test2-control-plane2   Ready    master   2d23h   v1.19.1</span><br><span class="line">test2-control-plane3   Ready    master   2d23h   v1.19.1</span><br><span class="line">test2-worker           Ready    &lt;none&gt;   2d23h   v1.19.1</span><br><span class="line">test2-worker2          Ready    &lt;none&gt;   2d23h   v1.19.1</span><br><span class="line">test2-worker3          Ready    &lt;none&gt;   2d23h   v1.19.1</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl config</span><br><span class="line">Modify kubeconfig files using subcommands like &quot;kubectl config set current-context my-context&quot;</span><br><span class="line"></span><br><span class="line"> The loading order follows these rules:</span><br><span class="line"></span><br><span class="line">  1.  If the --kubeconfig flag is set, then only that file is loaded. The flag may only be set once and no merging takes</span><br><span class="line">place.</span><br><span class="line">  2.  If $KUBECONFIG environment variable is set, then it is used as a list of paths (normal path delimiting rules for</span><br><span class="line">your system). These paths are merged. When a value is modified, it is modified in the file that defines the stanza. When</span><br><span class="line">a value is created, it is created in the first file that exists. If no files in the chain exist, then it creates the</span><br><span class="line">last file in the list.</span><br><span class="line">  3.  Otherwise, $&#123;HOME&#125;&#x2F;.kube&#x2F;config is used and no merging takes place.</span><br><span class="line"></span><br><span class="line">Available Commands:</span><br><span class="line">  current-context Displays the current-context</span><br><span class="line">  delete-cluster  Delete the specified cluster from the kubeconfig</span><br><span class="line">  delete-context  Delete the specified context from the kubeconfig</span><br><span class="line">  get-clusters    Display clusters defined in the kubeconfig</span><br><span class="line">  get-contexts    Describe one or many contexts</span><br><span class="line">  rename-context  Renames a context from the kubeconfig file.</span><br><span class="line">  set             Sets an individual value in a kubeconfig file</span><br><span class="line">  set-cluster     Sets a cluster entry in kubeconfig</span><br><span class="line">  set-context     Sets a context entry in kubeconfig</span><br><span class="line">  set-credentials Sets a user entry in kubeconfig</span><br><span class="line">  unset           Unsets an individual value in a kubeconfig file</span><br><span class="line">  use-context     Sets the current-context in a kubeconfig file</span><br><span class="line">  view            Display merged kubeconfig settings or a specified kubeconfig file</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  kubectl config SUBCOMMAND [options]</span><br><span class="line"></span><br><span class="line">Use &quot;kubectl &lt;command&gt; --help&quot; for more information about a given command.</span><br><span class="line">Use &quot;kubectl options&quot; for a list of global command-line options (applies to all commands).</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl config use-context</span><br><span class="line">Sets the current-context in a kubeconfig file</span><br><span class="line"></span><br><span class="line">Aliases:</span><br><span class="line">use-context, use</span><br><span class="line"></span><br><span class="line">Examples:</span><br><span class="line">  # Use the context for the minikube cluster</span><br><span class="line">  kubectl config use-context minikube</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  kubectl config use-context CONTEXT_NAME [options]</span><br><span class="line"></span><br><span class="line">Use &quot;kubectl options&quot; for a list of global command-line options (applies to all commands).</span><br><span class="line">error: Unexpected args: []</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl config use-context kind-kind</span><br><span class="line">Switched to context &quot;kind-kind&quot;.</span><br><span class="line"></span><br><span class="line">root@ubuntu:~# kubectl get node</span><br><span class="line">NAME                 STATUS   ROLES    AGE    VERSION</span><br><span class="line">kind-control-plane   Ready    master   3d1h   v1.19.1</span><br></pre></td></tr></table></figure>
+<p>实际上，kind内部创建集群过程中，也是使用kubeadm，从上述创建过程中的打印也似乎能猜到这一点</p>
+<p>后面，就可以使用搭建好的集群环境，开始你的开发、测试工作了~~~</p>
+
+    </div>
+
+    <div>全文完。</div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFkind"><span class="toc-text">什么是kind</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85kind"><span class="toc-text">安装kind</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E3%80%81%E6%9F%A5%E8%AF%A2%E9%9B%86%E7%BE%A4"><span class="toc-text">创建、查询集群</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E9%9B%86%E7%BE%A4"><span class="toc-text">删除集群</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%AB%98%E5%8F%AF%E7%94%A8kubernetes%E9%9B%86%E7%BE%A4"><span class="toc-text">创建高可用kubernetes集群</span></a></li></ol>
+  </div>
+
+
+  </div>
+</div>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="https://yushanjin.github.io/images/wechat.jpg" alt="Running Geek" style="margin: auto; display: block;"/>
+
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+  
+</div>
+
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2020/11/26/kubernetes_install_on_ubuntu/" rel="next" title="Ubuntu搭建Kubernetes集群">
+          Ubuntu搭建Kubernetes集群
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+          <a href="/2020/12/01/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8github%E4%BD%9C%E4%B8%BAHelm%E7%9A%84chart%E4%BB%93%E5%BA%93/" rel="prev" title="如何使用github作为Helm的chart仓库">
+            如何使用github作为Helm的chart仓库
+          </a>
+          <span>〉</span>
+        
+      </div>
+    </div>
+  
+
+
+    </div>
+
+    
+
+  </div>
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://yushanjin.github.io/">首页</a> |
+        <a class="bottom-item" href="https://yushanjin.github.io/" target="_blank">主站</a> |
+        <a class="bottom-item" href="https://github.com/yushanjin" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="https://hexo.io" target="_blank">Powered by hexo</a> |
+        <a class="bottom-item" href="https://github.com/KevinOfNeu/hexo-theme-xoxo" target="_blank">Theme xoxo</a>
+    </div>
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>

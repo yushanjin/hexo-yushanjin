@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="kuiper,edgex," />
+  
+
+  
+    <meta name="description" content="EMQ X Kuiper与EdgeX Foundry集成实践" />
+  
+  
+  <link rel="icon" type="image/x-icon" href="/images/logo.jpg">
+  <title>EMQ X Kuiper与EdgeX Foundry集成实践 [ Yushanjin&#39;s Blog ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="Yushanjin's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <img class="avatar" src="https://yushanjin.github.io/images/logo.jpg">
+    <span class="title">Yushanjin&#39;s Blog</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/categories" class="pure-menu-link">分类</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/atom.xml" class="pure-menu-link">订阅</a></li>
+          
+      
+  </ul>
+   
+</nav>
+
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        EMQ X Kuiper与EdgeX Foundry集成实践
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2020-12-01T02:34:44.000Z">
+        2020-12-01
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/edgex/" rel="tag">edgex</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kuiper/" rel="tag">kuiper</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+      <span class="slash">/</span>
+      <span class="read">阅读耗时 10 分钟</span>
+    </header>
+
+    <div class="post-content">
+      <p>Kuiper是什么? EdgeX Foundry又是什么？</p>
+<h1 id="Kuiper"><a href="#Kuiper" class="headerlink" title="Kuiper"></a>Kuiper</h1><p>EMQ X Kuiper 是 Golang 实现的轻量级物联网边缘分析、流式处理开源软件，可以运行在各类<strong>资源受限的边缘设备</strong>上。Kuiper 设计的一个主要目标就是将在云端运行的实时流式计算框架（比如 <a target="_blank" rel="noopener" href="https://spark.apache.org/">Apache Spark</a>，<a target="_blank" rel="noopener" href="https://storm.apache.org/">Apache Storm</a> 和 <a target="_blank" rel="noopener" href="https://flink.apache.org/">Apache Flink</a> 等）迁移到边缘端。Kuiper 参考了上述云端流式处理项目的架构与实现，结合边缘流式数据处理的特点，采用了编写<strong>基于<code>源 (Source)</code>，<code>SQL (业务逻辑处理)</code>, <code>目标 (Sink)</code> 的规则引擎来实现边缘端的流式数据处理</strong>。<br>其架构如下：<br><img src="https://upload-images.jianshu.io/upload_images/10839544-82b09a3d6c9e5c33.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<ul>
+<li>源 (Sources) ：内置支持 MQTT 数据的接入，扩展支持与EdgeX Foundry集成</li>
+<li>SQL：流式数据逻辑处理，具备完整的数据分析处理能力<ul>
+<li>支持丰富的数据类型</li>
+<li>支持4种时间窗口（滚动窗口、跳跃窗口、滑动窗口、会话窗口）</li>
+<li>内置60+处理函数</li>
+<li>提供类SQL语句对数据进行抽取、过滤、转换</li>
+</ul>
+</li>
+<li>目标(Sinks)：内置支持 MQTT、HTTP等</li>
+</ul>
+<p>EMQ公司的相关产品，可以登陆其官网查询了解<br><img src="https://upload-images.jianshu.io/upload_images/10839544-b1643f3d02bea968.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h1 id="EdgeX-Foundry"><a href="#EdgeX-Foundry" class="headerlink" title="EdgeX Foundry"></a>EdgeX Foundry</h1><p>EdgeX Foundry是一个Linux 基金会运营的开源的，基于与硬件和操作系统完全无关的边缘计算物联网软件框架项目。其是一系列松耦合、开源的微服务集合，位于网络的边缘，可以与设备、传感器、执行器和其他物联网对象的物理世界进行交互。EdgeX Foundry 旨在创造一个互操作性、即插即用、模块化的物联网边缘计算的生态系统。<br>其架构如下：<br><img src="https://upload-images.jianshu.io/upload_images/10839544-fd06dab15f5598af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>从架构图可以看出：<br><strong>南侧（SouthBound）</strong>:在物理领域内的所有物联网对象，以及与这些设备、传感器、执行器和其他物联网对象直接通信并从中收集数据的网络边缘，统称为“南侧”。<br><strong>北侧（NorthBound）</strong>:将数据收集、存储、聚合、分析并转换为信息的云(或企业系统)，以及与云通信的网络部分称为网络的“北侧”。<br>因此，EdgeX使数据可以向北移动到云，也可以横向移动到其他网关，或返回到设备、传感器和执行器。<br>EdgeX的重要服务层及微服务：<br><img src="https://upload-images.jianshu.io/upload_images/10839544-d0e4c5a219ab700d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="1、安装edgex"><a href="#1、安装edgex" class="headerlink" title="1、安装edgex"></a>1、安装edgex</h2><p>参照官网文档：<a target="_blank" rel="noopener" href="https://fuji-docs.edgexfoundry.org/Ch-GettingStartedUsers.html">https://fuji-docs.edgexfoundry.org/Ch-GettingStartedUsers.html</a><br>docker-compose启动<br><img src="https://upload-images.jianshu.io/upload_images/10839544-f5a8d9ed341b66b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>相关服务正常<br><img src="https://upload-images.jianshu.io/upload_images/10839544-8ab54653eca76cc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="2、安装并启动kuiper"><a href="#2、安装并启动kuiper" class="headerlink" title="2、安装并启动kuiper"></a>2、安装并启动kuiper</h2><p>sudo docker run -d –name kuiper –restart always -e EDGEX_SERVER=10.0.105.143 -e EDGEX_PORT=5563 -e EDGEX_SERVICE_SERVER=<a target="_blank" rel="noopener" href="http://10.0.105.143:48080/">http://10.0.105.143:48080</a> emqx/kuiper:0.2.1</p>
+<p>环境变量具体参考：<a target="_blank" rel="noopener" href="https://hub.docker.com/r/emqx/kuiper">https://hub.docker.com/r/emqx/kuiper</a> 中的说明<br>EDGEX_SERVER：edgex中zeromq的地址（zeromq集成到core data服务中了，可以看到core data服务暴露了两个端口一个5563，一个48080）<br>EDGEX_PORT：edgex中zeromq的端口<br>EDGEX_SERVICE_SERVER：edgex中core data的地址及端口<br>这里我使用的kuiper镜像为 emqx/kuiper:0.2.1，为目前最新版本</p>
+<h2 id="3、进入kuiper容器"><a href="#3、进入kuiper容器" class="headerlink" title="3、进入kuiper容器"></a>3、进入kuiper容器</h2><p>sudo docker exec -it kuiper /bin/sh</p>
+<h2 id="4、查看日志"><a href="#4、查看日志" class="headerlink" title="4、查看日志"></a>4、查看日志</h2><p>/kuiper # cat log/stream.log</p>
+<h2 id="5、创建流，订阅来自edgex的消息流"><a href="#5、创建流，订阅来自edgex的消息流" class="headerlink" title="5、创建流，订阅来自edgex的消息流"></a>5、创建流，订阅来自edgex的消息流</h2><p>/kuiper # bin/cli create stream demo’() WITH (FORMAT=”JSON”, TYPE=”edgex”)’</p>
+<h2 id="6、创建规则文件，内容如下"><a href="#6、创建规则文件，内容如下" class="headerlink" title="6、创建规则文件，内容如下"></a>6、创建规则文件，内容如下</h2><p>/kuiper # cat rule.txt</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo GROUP BY TUMBLINGWINDOW(ss, 10)&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;mqtt&quot;: &#123;</span><br><span class="line">        &quot;server&quot;: &quot;tcp:&#x2F;&#x2F;broker.emqx.io:1883&quot;,</span><br><span class="line">        &quot;topic&quot;: &quot;result&quot;,</span><br><span class="line">        &quot;clientId&quot;: &quot;demo_001&quot;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述规则：Kuiper将接受edgex的数据，执行select操作（每10s钟），然后将处理后的数据发布到tcp://broker.emqx.io:1883（也可以换成其他的，比如broker.hivemq.com或者自己搭建的EMQ X edge）<br><strong>注意：</strong>Kuiper SQL相关的参考，见<a target="_blank" rel="noopener" href="https://docs.emqx.io/kuiper/latest/cn/sqls/overview.html">https://docs.emqx.io/kuiper/latest/cn/sqls/overview.html</a></p>
+<h2 id="7、创建规则，命名为rule1"><a href="#7、创建规则，命名为rule1" class="headerlink" title="7、创建规则，命名为rule1"></a>7、创建规则，命名为rule1</h2><p>/kuiper # bin/cli create rule rule1 -f rule.txt</p>
+<h2 id="8、查看日志，可以看到已经连通edgex，相关的规则也已经创建"><a href="#8、查看日志，可以看到已经连通edgex，相关的规则也已经创建" class="headerlink" title="8、查看日志，可以看到已经连通edgex，相关的规则也已经创建"></a>8、查看日志，可以看到已经连通edgex，相关的规则也已经创建</h2><p><img src="https://upload-images.jianshu.io/upload_images/10839544-4f07b16e3735e2dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="9、查看规则状态"><a href="#9、查看规则状态" class="headerlink" title="9、查看规则状态"></a>9、查看规则状态</h2><p><img src="https://upload-images.jianshu.io/upload_images/10839544-1349f6fd6210e627.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="10、使用mosquitto订阅broker-emqx-io中主题为result的消息"><a href="#10、使用mosquitto订阅broker-emqx-io中主题为result的消息" class="headerlink" title="10、使用mosquitto订阅broker.emqx.io中主题为result的消息"></a>10、使用mosquitto订阅broker.emqx.io中主题为result的消息</h2><p><img src="https://upload-images.jianshu.io/upload_images/10839544-4fdbca2eb0e7af64.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>分析结果，发布到文件（<a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper/blob/master/docs/zh_CN/plugins/sinks/file.md">https://github.com/emqx/kuiper/blob/master/docs/zh_CN/plugins/sinks/file.md</a>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">   &#123;</span><br><span class="line">      &quot;file&quot;: &#123;</span><br><span class="line">        &quot;path&quot;: &quot;&#x2F;tmp&#x2F;result.txt&quot;,</span><br><span class="line">        &quot;interval&quot;: 5000</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析结果，发布到zmq（<a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper/blob/master/docs/zh_CN/plugins/sinks/zmq.md">https://github.com/emqx/kuiper/blob/master/docs/zh_CN/plugins/sinks/zmq.md</a>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;zmq&quot;: &#123;</span><br><span class="line">       &quot;server&quot;: &quot;tcp:&#x2F;&#x2F;127.0.0.1:5563&quot;,</span><br><span class="line">       &quot;topic&quot;: &quot;temp&quot;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析结果，通过调用rest（<a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper/blob/master/docs/en_US/rules/sinks/rest.md">https://github.com/emqx/kuiper/blob/master/docs/en_US/rules/sinks/rest.md</a>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;rest&quot;: &#123;</span><br><span class="line">      &quot;url&quot;: &quot;http:&#x2F;&#x2F;127.0.0.1:48082&#x2F;api&#x2F;v1&#x2F;device&#x2F;cc622d99-f835-4e94-b5cb-b1eff8699dc4&#x2F;command&#x2F;51fce08a-ae19-4bce-b431-b9f363bba705&quot;,       </span><br><span class="line">      &quot;method&quot;: &quot;post&quot;,</span><br><span class="line">      &quot;dataTemplate&quot;: &quot;\&quot;newKey\&quot;:\&quot;&#123;&#123;.key&#125;&#125;\&quot;&quot;,</span><br><span class="line">      &quot;sendSingle&quot;: true</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>这个类似于EdgeX中core services中的command服务</strong></p>
+<p>分析结果，发布到edgex（<a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper/blob/master/docs/en_US/rules/sinks/edgex.md">https://github.com/emqx/kuiper/blob/master/docs/en_US/rules/sinks/edgex.md</a>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;edgex&quot;: &#123;</span><br><span class="line">        &quot;protocol&quot;: &quot;tcp&quot;,</span><br><span class="line">        &quot;host&quot;: &quot;*&quot;,</span><br><span class="line">        &quot;port&quot;: 5571,</span><br><span class="line">        &quot;topic&quot;: &quot;application&quot;,</span><br><span class="line">        &quot;deviceName&quot;: &quot;kuiper&quot;,</span><br><span class="line">        &quot;contentType&quot;: &quot;application&#x2F;json&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析结果，发布到日志文件，默认在log/stream.log</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sql&quot;: &quot;SELECT * from demo&quot;,</span><br><span class="line">  &quot;actions&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;log&quot;: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>经验证，有些插件不完整</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;kuiper # .&#x2F;bin&#x2F;cli getstatus rule rule1</span><br><span class="line">Connecting to 127.0.0.1:20498... </span><br><span class="line">Stopped: cannot open &#x2F;kuiper&#x2F;plugins&#x2F;sinks&#x2F;File.so: plugin.Open(&quot;&#x2F;kuiper&#x2F;plugins&#x2F;sinks&#x2F;File.so&quot;): Error relocating &#x2F;kuiper&#x2F;plugins&#x2F;sinks&#x2F;File.so: __fprintf_chk: symbol not found.</span><br></pre></td></tr></table></figure>
+
+
+<p>参考：</p>
+<p>1、kuiper官方文档及github地址</p>
+<p><a target="_blank" rel="noopener" href="https://docs.emqx.io/kuiper/latest/cn/">https://docs.emqx.io/kuiper/latest/cn/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper">https://github.com/emqx/kuiper</a></p>
+<p>2、kuiper集成edgex文档<a target="_blank" rel="noopener" href="https://github.com/emqx/kuiper/blob/master/docs/en_US/edgex/edgex_rule_engine_tutorial.md">https://github.com/emqx/kuiper/blob/master/docs/en_US/edgex/edgex_rule_engine_tutorial.md</a></p>
+
+    </div>
+
+    <div>全文完。</div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Kuiper"><span class="toc-text">Kuiper</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#EdgeX-Foundry"><span class="toc-text">EdgeX Foundry</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85edgex"><span class="toc-text">1、安装edgex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%AE%89%E8%A3%85%E5%B9%B6%E5%90%AF%E5%8A%A8kuiper"><span class="toc-text">2、安装并启动kuiper</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E8%BF%9B%E5%85%A5kuiper%E5%AE%B9%E5%99%A8"><span class="toc-text">3、进入kuiper容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97"><span class="toc-text">4、查看日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E5%88%9B%E5%BB%BA%E6%B5%81%EF%BC%8C%E8%AE%A2%E9%98%85%E6%9D%A5%E8%87%AAedgex%E7%9A%84%E6%B6%88%E6%81%AF%E6%B5%81"><span class="toc-text">5、创建流，订阅来自edgex的消息流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E5%88%9B%E5%BB%BA%E8%A7%84%E5%88%99%E6%96%87%E4%BB%B6%EF%BC%8C%E5%86%85%E5%AE%B9%E5%A6%82%E4%B8%8B"><span class="toc-text">6、创建规则文件，内容如下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7%E3%80%81%E5%88%9B%E5%BB%BA%E8%A7%84%E5%88%99%EF%BC%8C%E5%91%BD%E5%90%8D%E4%B8%BArule1"><span class="toc-text">7、创建规则，命名为rule1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8%E3%80%81%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E5%B7%B2%E7%BB%8F%E8%BF%9E%E9%80%9Aedgex%EF%BC%8C%E7%9B%B8%E5%85%B3%E7%9A%84%E8%A7%84%E5%88%99%E4%B9%9F%E5%B7%B2%E7%BB%8F%E5%88%9B%E5%BB%BA"><span class="toc-text">8、查看日志，可以看到已经连通edgex，相关的规则也已经创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9%E3%80%81%E6%9F%A5%E7%9C%8B%E8%A7%84%E5%88%99%E7%8A%B6%E6%80%81"><span class="toc-text">9、查看规则状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10%E3%80%81%E4%BD%BF%E7%94%A8mosquitto%E8%AE%A2%E9%98%85broker-emqx-io%E4%B8%AD%E4%B8%BB%E9%A2%98%E4%B8%BAresult%E7%9A%84%E6%B6%88%E6%81%AF"><span class="toc-text">10、使用mosquitto订阅broker.emqx.io中主题为result的消息</span></a></li></ol></li></ol>
+  </div>
+
+
+  </div>
+</div>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share" style="width: 100%;">
+  <img src="https://yushanjin.github.io/images/wechat.jpg" alt="Running Geek" style="margin: auto; display: block;"/>
+
+  <div style="margin: auto; text-align: center; font-size: 0.8em; color: grey;">老铁们关注走一走，不迷路</div>
+  
+</div>
+
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2020/12/01/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8github%E4%BD%9C%E4%B8%BAHelm%E7%9A%84chart%E4%BB%93%E5%BA%93/" rel="next" title="如何使用github作为Helm的chart仓库">
+          如何使用github作为Helm的chart仓库
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+          <a href="/2020/12/01/kubernetes%E7%9A%84python-client%E4%BD%93%E9%AA%8C/" rel="prev" title="kubernetes的python-client体验">
+            kubernetes的python-client体验
+          </a>
+          <span>〉</span>
+        
+      </div>
+    </div>
+  
+
+
+    </div>
+
+    
+
+  </div>
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://yushanjin.github.io/">首页</a> |
+        <a class="bottom-item" href="https://yushanjin.github.io/" target="_blank">主站</a> |
+        <a class="bottom-item" href="https://github.com/yushanjin" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="https://hexo.io" target="_blank">Powered by hexo</a> |
+        <a class="bottom-item" href="https://github.com/KevinOfNeu/hexo-theme-xoxo" target="_blank">Theme xoxo</a>
+    </div>
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
